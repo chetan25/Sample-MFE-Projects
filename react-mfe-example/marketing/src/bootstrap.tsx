@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import App from './app';
 
 // mounts the Marketing App
 const mountMarketing = (element: HTMLElement) => {
     /** RENDER TO DOM **/
     ReactDOM.render(
-        <h1>Hi There</h1> ,
+        <App />,
         element
     );
 }
 
-// check for running in development
+// check for running in development mode, used for standalone
 if (process.env.NODE_ENV === 'development') {
     const element = document.querySelector('#marketing-dev') as HTMLElement;
     if (element) {
@@ -18,4 +19,5 @@ if (process.env.NODE_ENV === 'development') {
     }
 }
 
-export default mountMarketing;
+// used by Container 
+export { mountMarketing };

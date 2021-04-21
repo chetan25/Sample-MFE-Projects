@@ -5,7 +5,7 @@ import { StylesProvider } from '@material-ui/core/styles';
 import Landing from './components/landing';
 import Pricing from './components/pricing';
 
-const App = () => {
+const MarketingApp = () => {
   return (
     <div>
        <StylesProvider>
@@ -20,4 +20,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default MarketingApp;

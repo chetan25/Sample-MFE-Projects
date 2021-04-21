@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app';
+import MarketingApp from './app';
 
 // mounts the Marketing App
 const mountMarketing = (element: HTMLElement) => {
     /** Render to DOM **/
     ReactDOM.render(
-        <App />,
+        <MarketingApp />,
         element
     );
 }

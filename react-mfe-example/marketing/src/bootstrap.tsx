@@ -19,5 +19,5 @@ if (process.env.NODE_ENV === 'development') {
     }
 }
 
-// used by Container 
+// used by Container App to load the Micro FE
 export { mountMarketing };

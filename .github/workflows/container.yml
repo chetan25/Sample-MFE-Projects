@@ -19,6 +19,9 @@ jobs:
       - uses: actions/checkout@v2
       - run: npm install
       - run: npm run build
+        # setting env variable to be available at build time
+        env:
+          PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
 
       # https://github.com/marketplace/actions/configure-aws-credentials-action-for-github-actions
       - uses: aws-actions/configure-aws-credentials@v1

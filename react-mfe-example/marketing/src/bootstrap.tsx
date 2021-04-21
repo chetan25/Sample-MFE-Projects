@@ -4,7 +4,7 @@ import App from './app';
 
 // mounts the Marketing App
 const mountMarketing = (element: HTMLElement) => {
-    /** RENDER TO DOM **/
+    /** Render to DOM **/
     ReactDOM.render(
         <App />,
         element

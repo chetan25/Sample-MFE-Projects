@@ -21,6 +21,7 @@ const prodConfig = {
                 './MarketingApp': './src/bootstrap'
             },
             // shared: ['react', 'react-dom']
+            // shared deps gets loaded as separate individual files
             shared: packageJson.dependencies // optional way to list all dependencies as shared
         })
     ]

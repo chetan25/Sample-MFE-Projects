@@ -11,18 +11,23 @@ const generateClassName = createGenerateClassName({
   productionPrefix: 'auth'
 });
 
-interface MarketingAppProps {
-  history: MemoryHistory
+interface AuthAppProps {
+  history: MemoryHistory;
+  onAuthChange: (email: string | null) => void
 }
 
-const AuthApp = ({history}: MarketingAppProps) => {
+const AuthApp = ({history, onAuthChange}: AuthAppProps) => {  
   return (
     <div>
        <StylesProvider generateClassName={generateClassName}>
            <Router history={history}>
               <Switch>
-                  <Route path='/auth/signup' component={SignUp} />
-                  <Route path='/auth/signin' component={SignIn} />
+                  <Route path='/auth/signup'>
+                    <SignUp onSignIn={onAuthChange}/>
+                  </Route>
+                  <Route path='/auth/signin'>
+                    <SignIn onSignIn={onAuthChange}/>
+                  </Route>
               </Switch>
            </Router>
        </StylesProvider>

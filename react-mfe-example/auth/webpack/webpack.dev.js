@@ -11,9 +11,11 @@ const devConfig = {
     },
     devServer: {
         port: 8082,
-        historyApiFallback: {
-            index: 'index.html'
-        }
+        contentBase: '../public',
+        historyApiFallback: true,
+        // historyApiFallback: {
+        //     index: 'index.html'
+        // }
     },
     plugins: [
         new HtmlWebpackPlugin({

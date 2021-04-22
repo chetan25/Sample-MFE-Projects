@@ -57,9 +57,10 @@ const useStyles = makeStyles((theme) => ({
 interface HeaderProps {
     signedIn: boolean;
     onSignOut: () => void;
+    userEmail: string | undefined;
 }
 
-export default function Header({ signedIn, onSignOut }: HeaderProps) {
+export default function Header({ signedIn, onSignOut, userEmail }: HeaderProps) {
   const classes = useStyles();
 
   const onClick = () => {
@@ -85,6 +86,9 @@ export default function Header({ signedIn, onSignOut }: HeaderProps) {
             to="/"
           >
             App
+            <span>
+              {signedIn ? `  ---- ${userEmail}` : null}
+            </span>
           </Typography>
           <Button
             color="primary"

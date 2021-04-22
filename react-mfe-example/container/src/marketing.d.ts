@@ -1,5 +1,7 @@
 declare module "marketing/MarketingApp" { 
-    const mountMarketing: (el: HTMLElement) => void; 
+    const mountMarketing: (el: HTMLElement, options: {}) => {
+      onContainerNavigate: any
+    }; 
    
     export { mountMarketing }; 
   } 

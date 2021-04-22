@@ -12,19 +12,26 @@ interface LocationProp {
 
 interface MountOptions {
     onNavigate?:  () => void;
-    defaultHistory?: any
+    defaultHistory?: any;
+    initialPath?: string;
+    onAuthChange?: (user: {email: string} | null) => void;
 }
 
 // mounts the Marketing App
 const mountAuth = (element: HTMLElement, options?: MountOptions) => {
-    const history = options?.defaultHistory ? options.defaultHistory : createMemoryHistory();
+    const history = options?.defaultHistory ? options.defaultHistory : createMemoryHistory({
+        // since we don't have a starting route as '/' in auth app we need to configure it to assume it's starting point
+        initialEntries: [options?.initialPath || '/auth/signin']
+    });
 
     if (options) {
         history.listen(options.onNavigate);
     }
+    const fallbackAuthFn = (user: {email: string} | null) => {};
+    
     /** Render to DOM **/
     ReactDOM.render(
-        <AuthApp history={history}/>,
+        <AuthApp history={history} onAuthChange={options!.onAuthChange || fallbackAuthFn}/>,
         element
     );
 
@@ -32,8 +39,8 @@ const mountAuth = (element: HTMLElement, options?: MountOptions) => {
     return {
         onContainerNavigate({pathname: newContainerPath}: LocationProp) {
             const { pathname } = history.location;
+            console.log('container navigated auth', newContainerPath.replace, pathname);
             if (pathname !== newContainerPath) {
-                console.log('container navigated');
                 history.push(newContainerPath);
             }
         }
@@ -44,8 +51,8 @@ const mountAuth = (element: HTMLElement, options?: MountOptions) => {
 if (process.env.NODE_ENV === 'development') {
     const history = createBrowserHistory();
     const element = document.querySelector('#auth-dev') as HTMLElement;
-    console.log('element');
     if (element) {
+    console.log('element', history);
       
         mountAuth(element, {defaultHistory: history});
     }

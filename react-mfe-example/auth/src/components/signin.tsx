@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -51,11 +51,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface SignInProps {
-  onSignIn: () => void;
-}
+  onSignIn: (email: string | null) => void
+};
 
 export default function SignIn({ onSignIn }: SignInProps) {
   const classes = useStyles();
+  const [email, setEmail] = useState('');
+
+  const handleEmailChange = (e: any) => {
+    setEmail(e.target!.value);
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -72,6 +77,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
           noValidate
         >
           <TextField
+            onChange={handleEmailChange}
             variant="outlined"
             margin="normal"
             required
@@ -103,7 +109,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={onSignIn}
+            onClick={() => onSignIn(email)}
           >
             Sign In
           </Button>

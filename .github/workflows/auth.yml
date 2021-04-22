@@ -1,0 +1,40 @@
+name: auth-deploy
+
+on:
+  push:
+    - main
+  # In a mono repo this tells git to run this action only when something under the specified path changes  
+  paths:
+    - 'react-mfe-example/auth/**'
+
+defaults:
+  run:
+    # sets the working directory where to run the command from, same as paths
+    working-directory: react-mfe-example/auth
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v2
+      
+      - name: Install
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ca-central-1
+
+      - name: Sync aws folders
+        run: aws s3 sync dist s3://${{ secrets.AWS_S3_BUCKET_NAME }}/auth/latest
+     
+      - name: Invalidation
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID }} --paths "/auth/latest/remoteEntry.js"
+    

@@ -30,3 +30,9 @@ this would show right color in the MFE app we have just loaded, but if we naviga
    }
 ```
 > Or use a shared CSS library across the board in all Micro Apps.
+
+#### publicPath
+If we don't set publicPath in micro app, the scripts are loaded form the remoteEntry.js file relative to the url that remoteEntry was loaded from.
+
+#### When sub app don't react to '/' they would not route properly
+For example in Auth app we don't have a route listening to '/', we are only listening to '/auth/' routes. But the MemoryHistory Object we created would by default use '/' as initial route, so when we navigate from a main route to '/auth' the MemoryHistory of Auth would not pick that route, since for the first time it would get initialized with '/'. To fix this we need to set the initial route for this to be '/auth/signin'

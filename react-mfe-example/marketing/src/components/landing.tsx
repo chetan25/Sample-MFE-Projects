@@ -79,7 +79,7 @@ export default function Album() {
               color="textPrimary"
               gutterBottom
             >
-              Home Page
+              Total Dummy Site
             </Typography>
             <Typography
               variant="h5"
@@ -87,9 +87,8 @@ export default function Album() {
               color="textSecondary"
               paragraph
             >
-              Something short and leading about the collection below—its
-              contents, the creator, etc. Make it short and sweet, but not too
-              short so folks don&apos;t simply skip over it entirely.
+              This is a dummy site and all the images are fetched using a free api at the moment. The buttons do not work and are just there for UI purpose.
+              This is a Micro FE App, consiting of 3 micro front ends, the Conatiner App, Marketing App and the Authentication App. 
             </Typography>
             <div className={classes.heroButtons}>
               <Grid container spacing={2} justify="center">
@@ -119,7 +118,7 @@ export default function Album() {
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
-                    image="https://source.unsplash.com/random"
+                    image="https://source.unsplash.com/daily"
                     title="Image title"
                   />
                   <CardContent className={classes.cardContent}>
@@ -156,7 +155,7 @@ export default function Album() {
           color="textSecondary"
           component="p"
         >
-          Something here to give the footer a purpose!
+          Built with React + Webapck Module Federation Plugin
         </Typography>
         <Copyright />
       </footer>

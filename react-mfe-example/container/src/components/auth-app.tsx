@@ -17,7 +17,6 @@ const AuthApp = ({onSignIn}: {onSignIn: (email: string) => void}) => {
         if (ref.current) {
             const {onContainerNavigate} = mountAuth(ref.current!, {
                 onNavigate: ({ pathname: newPathName }: LocationProp) => {
-                    console.log('changed', newPathName);
                     const { pathname } = history.location;
                     // to prevent from going into infinite loop of updating route form different locations, we put a check
                     if (pathname !== newPathName) {

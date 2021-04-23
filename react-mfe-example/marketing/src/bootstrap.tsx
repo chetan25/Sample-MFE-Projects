@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createMemoryHistory, MemoryHistory, createBrowserHistory } from 'history';
+import { createMemoryHistory, createBrowserHistory } from 'history';
 import MarketingApp from './app';
 
 interface LocationProp {
@@ -37,7 +37,6 @@ const mountMarketing = (element: HTMLElement, options?: MountOptions) => {
         onContainerNavigate({pathname: newContainerPath}: LocationProp) {
             const { pathname } = history.location;
             if (pathname !== newContainerPath) {
-                console.log('container navigated');
                 history.push(newContainerPath);
             }
         }

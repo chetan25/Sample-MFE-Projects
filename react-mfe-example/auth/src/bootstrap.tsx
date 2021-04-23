@@ -39,7 +39,6 @@ const mountAuth = (element: HTMLElement, options?: MountOptions) => {
     return {
         onContainerNavigate({pathname: newContainerPath}: LocationProp) {
             const { pathname } = history.location;
-            console.log('container navigated auth', newContainerPath.replace, pathname);
             if (pathname !== newContainerPath) {
                 history.push(newContainerPath);
             }
@@ -52,8 +51,6 @@ if (process.env.NODE_ENV === 'development') {
     const history = createBrowserHistory();
     const element = document.querySelector('#auth-dev') as HTMLElement;
     if (element) {
-    console.log('element', history);
-      
         mountAuth(element, {defaultHistory: history});
     }
 }

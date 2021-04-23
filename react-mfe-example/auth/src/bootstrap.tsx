@@ -14,7 +14,7 @@ interface MountOptions {
     onNavigate?:  () => void;
     defaultHistory?: any;
     initialPath?: string;
-    onAuthChange?: (user: {email: string} | null) => void;
+    onAuthChange?: (email: string | null) => void;
 }
 
 // mounts the Marketing App
@@ -27,7 +27,7 @@ const mountAuth = (element: HTMLElement, options?: MountOptions) => {
     if (options) {
         history.listen(options.onNavigate);
     }
-    const fallbackAuthFn = (user: {email: string} | null) => {};
+    const fallbackAuthFn = (email: string | null) => {};
     
     /** Render to DOM **/
     ReactDOM.render(

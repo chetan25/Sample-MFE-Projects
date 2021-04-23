@@ -2,10 +2,11 @@ name: auth-deploy
 
 on:
   push:
-    - main
-  # In a mono repo this tells git to run this action only when something under the specified path changes  
-  paths:
-    - 'react-mfe-example/auth/**'
+    branches:
+     - main
+    # In a mono repo this tells git to run this action only when something under the specified path changes  
+    paths:
+      - 'react-mfe-example/auth/**'
 
 defaults:
   run:

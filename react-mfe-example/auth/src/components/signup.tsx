@@ -136,9 +136,7 @@ export default function SignUp({ onSignIn }: SignUpProps) {
             color="primary"
             className={classes.submit}
             onClick={() =>  onSignIn(email)}
-          >
-            Sign Up
-          </Button>
+          >Sign Up</Button>
           <Grid container justify="flex-end">
             <Grid item>
               <Link to="/auth/signin">Already have an account? Sign in</Link>

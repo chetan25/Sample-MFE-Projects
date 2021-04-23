@@ -18,7 +18,7 @@ const prodConfig = {
             name: 'auth',
             filename: 'remoteEntry.js',
             exposes: {
-                './AuthApp': './src/AuthApp'
+                './AuthApp': './src/bootstrap'
             },
             // shared: ['react', 'react-dom']
             // shared deps gets loaded as separate individual files

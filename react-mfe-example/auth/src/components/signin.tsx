@@ -11,6 +11,12 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
+import { assign } from 'xstate';
+import signInFormMachine, {FormContext} from '../stateMachines/signin';
+import { useMachine} from '@xstate/react';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 function Copyright() {
   return (
@@ -48,19 +54,101 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  alert: {
+    background: 'red'
+  }
 }));
 
 interface SignInProps {
   onSignIn: (email: string | null) => void
 };
 
+
+const updateFormValues = assign<FormContext, any>({
+  fields: (context, event) => {
+    const updatedField = event.data ? {
+      [event.data.key]: event.data.value 
+    } : {};
+    return {
+      ...context.fields,
+      ...updatedField
+    };
+  }
+}) as any;
+
+const isFormValid = (context: FormContext) => {
+  return  context.fields.email.length > 4 && context.fields.password.length > 4;
+}
+
+const isFormInValid = (context: FormContext) => {
+  return !isFormValid(context);
+}
+
 export default function SignIn({ onSignIn }: SignInProps) {
   const classes = useStyles();
-  const [email, setEmail] = useState('');
+  const [open, setOpen] = useState(false);
 
+  const [state, send] = useMachine(signInFormMachine, {
+    actions: {
+      updateFormValues: updateFormValues  
+    },
+    guards: {
+      isFormValid: isFormValid,
+      isFormInValid: isFormInValid
+    }  
+  });
+  const { email, password } = state.context.fields;
+  
   const handleEmailChange = (e: any) => {
-    setEmail(e.target!.value);
+    send({
+      type: 'INPUT_CHANGED',
+      data: {
+        value: e.target!.value,
+        key: 'email'
+      }
+    });
   }
+
+  const handlePasswordChange = (e: any) => {
+    send({
+      type: 'INPUT_CHANGED',
+      data: {
+        value: e.target!.value,
+        key: 'password'
+      }
+    });
+  }
+
+  const formValid = () => {
+    return email.length > 4 && password.length > 4
+  }
+
+  const handleSubmit = () => {
+    setOpen(false);
+     if (formValid()) {
+       onSignIn(email);
+      } else {
+        send({
+          type: 'INPUT_CHANGED',
+          data: {
+            value: email,
+            key: 'email'
+          }
+        });
+        send({
+          type: 'INPUT_CHANGED',
+          data: {
+            value: password,
+            key: 'password'
+          }
+        });
+        setOpen(true);
+      }
+  }
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -87,8 +175,11 @@ export default function SignIn({ onSignIn }: SignInProps) {
             name="email"
             autoComplete="email"
             autoFocus
+            error={(email && email.length < 4) || open ? true : false}
+            helperText={(email && email.length < 4) || open ? 'Invalid Email' : ''}
           />
           <TextField
+           onChange={handlePasswordChange}
             variant="outlined"
             margin="normal"
             required
@@ -98,6 +189,8 @@ export default function SignIn({ onSignIn }: SignInProps) {
             type="password"
             id="password"
             autoComplete="current-password"
+            error={(password && password.length < 4) || open ? true : false}
+            helperText={(password && password.length < 4) || open ? 'Invalid password' : ''}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -109,7 +202,7 @@ export default function SignIn({ onSignIn }: SignInProps) {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={() => onSignIn(email)}
+            onClick={handleSubmit}
           >
             Sign In
           </Button>
@@ -119,6 +212,25 @@ export default function SignIn({ onSignIn }: SignInProps) {
             </Grid>
           </Grid>
         </form>
+        <Snackbar
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          open={open}
+          onClose={handleClose}
+          message="Error in Form"
+          key={`bottom + center`}
+          className={classes.alert}
+          action={
+            <React.Fragment>
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                onClick={handleClose}
+              >
+                <CloseIcon />
+              </IconButton>
+            </React.Fragment>
+          }
+       />
       </div>
       <Box mt={8}>
         <Copyright />

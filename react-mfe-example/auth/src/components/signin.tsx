@@ -1,7 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
@@ -12,11 +11,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
 import { assign } from 'xstate';
-import signInFormMachine, {FormContext} from '../stateMachines/signin';
+import {FormContext, FormMachine} from '../stateMachines/signin';
 import { useMachine} from '@xstate/react';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import InputFiled from './input-filed';
 
 function Copyright() {
   return (
@@ -64,86 +64,114 @@ interface SignInProps {
 };
 
 
-const updateFormValues = assign<FormContext, any>({
-  fields: (context, event) => {
-    const updatedField = event.data ? {
-      [event.data.key]: event.data.value 
-    } : {};
-    return {
-      ...context.fields,
-      ...updatedField
-    };
-  }
-}) as any;
+// const updateFormValues = assign<FormContext, any>({
+//   fields: (context, event) => {
+//     const updatedField = event.data ? {
+//       [event.data.key]: event.data.value 
+//     } : {};
+//     return {
+//       ...context.fields,
+//       ...updatedField
+//     };
+//   }
+// }) as any;
 
-const isFormValid = (context: FormContext) => {
-  return  context.fields.email.length > 4 && context.fields.password.length > 4;
-}
+// const isFormValid = (context: FormContext) => {
+//   return  context.fields.email.length > 4 && context.fields.password.length > 4;
+// }
 
 const isFormInValid = (context: FormContext) => {
-  return !isFormValid(context);
+   return false;
+  // return !isFormValid(context);
 }
 
 export default function SignIn({ onSignIn }: SignInProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
-  const [state, send] = useMachine(signInFormMachine, {
-    actions: {
-      updateFormValues: updateFormValues  
-    },
-    guards: {
-      isFormValid: isFormValid,
-      isFormInValid: isFormInValid
-    }  
-  });
-  const { email, password } = state.context.fields;
-  
-  const handleEmailChange = (e: any) => {
-    send({
-      type: 'INPUT_CHANGED',
-      data: {
-        value: e.target!.value,
-        key: 'email'
-      }
-    });
-  }
+  // const [state, send] = useMachine(FormMachine, {
+  //   actions: {
+  //     updateFormValues: updateFormValues  
+  //   },
+  //   guards: {
+  //     isFormValid: isFormValid,
+  //     isFormInValid: isFormInValid
+  //   }  
+  // });
+  // const { email, password } = state.context.fields;
 
-  const handlePasswordChange = (e: any) => {
-    send({
-      type: 'INPUT_CHANGED',
+  const [formState, formSend] = useMachine(FormMachine);
+
+  useEffect(() => {
+    formSend({
+      type: 'ADD_INPUTS',
       data: {
-        value: e.target!.value,
-        key: 'password'
+        id: 'email',
+        helperText: 'Invalid Email',
+        label : 'Email',
+        required: true,
+        initialState: 'active'
       }
     });
-  }
+    formSend({
+      type: 'ADD_INPUTS',
+      data: {
+        id: 'password',
+        helperText: 'Invalid Password',
+        label : 'Password',
+        required: true,
+        initialState: 'active'
+      }
+    })
+  }, []);
+
+  // const handleEmailChange = (e: any) => {
+  //   // send({
+  //   //   type: 'INPUT_CHANGED',
+  //   //   data: {
+  //   //     value: e.target!.value,
+  //   //     key: 'email'
+  //   //   }
+  //   // });
+  // }
+
+  // const handlePasswordChange = (e: any) => {
+  //   // send({
+  //   //   type: 'INPUT_CHANGED',
+  //   //   data: {
+  //   //     value: e.target!.value,
+  //   //     key: 'password'
+  //   //   }
+  //   // });
+  // }
 
   const formValid = () => {
-    return email.length > 4 && password.length > 4
+    return false;
+    // return email.length > 4 && password.length > 4
   }
 
   const handleSubmit = () => {
-    setOpen(false);
-     if (formValid()) {
-       onSignIn(email);
-      } else {
-        send({
-          type: 'INPUT_CHANGED',
-          data: {
-            value: email,
-            key: 'email'
-          }
-        });
-        send({
-          type: 'INPUT_CHANGED',
-          data: {
-            value: password,
-            key: 'password'
-          }
-        });
-        setOpen(true);
-      }
+    console.log(formState, 'formState');
+    // setOpen(false);
+    //  if (formValid()) {
+    //    onSignIn(email);
+    //   } else {
+    //     send({
+    //       type: 'INPUT_CHANGED',
+    //       data: {
+    //         value: email,
+    //         key: 'email'
+    //       }
+    //     });
+    //     send({
+    //       type: 'INPUT_CHANGED',
+    //       data: {
+    //         value: password,
+    //         key: 'password'
+    //       }
+    //     });
+    //     setOpen(true);
+    //   }
   }
 
   const handleClose = () => {
@@ -164,34 +192,38 @@ export default function SignIn({ onSignIn }: SignInProps) {
           className={classes.form}
           noValidate
         >
-          <TextField
-            onChange={handleEmailChange}
-            variant="outlined"
-            margin="normal"
+            {
+                  formState.context.inputs.map((input, i) => {
+                    //@ts-ignore
+                    const { context } = input.machine;
+                    return <InputFiled
+                      key={i}
+                      inputMachineRef={input}
+                      label={context.label}
+                      required={context.required}
+                      helperText={context.helperText}
+                      id={context.id} 
+                    />
+                  })
+            }
+          {/* <InputFiled
+            handleChange={handleEmailChange}
             required
-            fullWidth
             id="email"
             label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
             error={(email && email.length < 4) || open ? true : false}
             helperText={(email && email.length < 4) || open ? 'Invalid Email' : ''}
           />
-          <TextField
-           onChange={handlePasswordChange}
-            variant="outlined"
-            margin="normal"
+          <InputFiled
+            handleChange={handlePasswordChange}
             required
-            fullWidth
-            name="password"
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
+            // autoComplete="current-password"
             error={(password && password.length < 4) || open ? true : false}
             helperText={(password && password.length < 4) || open ? 'Invalid password' : ''}
-          />
+          /> */}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"

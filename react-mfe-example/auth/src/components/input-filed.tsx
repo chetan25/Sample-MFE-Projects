@@ -1,57 +1,43 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
-import { InputActor } from '../stateMachines/signin';
+import { useService } from '@xstate/react';
+import { InputInsacne } from '../stateMachines/inputField';
 
-import { useService} from '@xstate/react';
-
-interface InputFiledProps {
+interface InputFiledProps<T> {
     helperText: string;
     label : string;
     id: string;
     required: boolean;
     type?: string;
-    inputMachineRef: InputActor
+    showError?: boolean;
+    autoFocus?: boolean;
+    machineInstance: InputInsacne<T>;
 };
 
-const InputFiled = ({
+const InputFiled = <T,>({
     helperText,
     label,
     id,
     required,
-    inputMachineRef,
-    type = 'text'
-}: InputFiledProps) => {
-    //@ts-ignore
-    const [state, send] = useService(inputMachineRef);
-    const { error } = state.context;
+    machineInstance,
+    type = 'text',
+    showError = false,
+    autoFocus = false
+}: InputFiledProps<T>) => {
+    const [state, send] = useService(machineInstance);
+    const isInputValid = state.value === 'valid';
 
-    console.log(state, 'state');
+    // console.log(state, 'state');
+
     const handleChange = (e: any) => {
         const val =  e.target!.value;
         send({
-          type: 'INPUT_VALUE_CHANGED',
+          type: 'INPUT_CHANGED',
           //@ts-ignore
           value: val
         });
-        send({
-            type: 'UPDATE_ERROR_STATE',
-            //@ts-ignore
-            value: val && val.length < 4 ? true : false
-        });
       }
      
-    const updateForm = () => {
-        send({
-            type: 'UPDATE_FORM',
-            //@ts-ignore
-            data: {
-                value: state.context.value,
-                isValid: state.context.error,
-                id: state.context.id
-            }
-        });
-    }  
-
    return (
     <TextField
         onChange={handleChange}
@@ -64,10 +50,9 @@ const InputFiled = ({
         name={id}
         type={type}
         // autoComplete="email"
-        autoFocus
-        error={error}
-        helperText={error ? helperText : ''}
-        onBlur={updateForm}
+        autoFocus={autoFocus}
+        error={ state.context.value && !isInputValid || (!isInputValid && showError)}
+        helperText={(state.context.value && !isInputValid || (!isInputValid && showError)) ? helperText : ''}
     />
    );
 }

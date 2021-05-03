@@ -10,13 +10,13 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
-import { assign } from 'xstate';
 import {FormContext, FormMachine} from '../stateMachines/signin';
 import { useMachine} from '@xstate/react';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import InputFiled from './input-filed';
+import { createInputMachine } from '../stateMachines/inputField';
 
 function Copyright() {
   return (
@@ -76,74 +76,30 @@ interface SignInProps {
 //   }
 // }) as any;
 
-// const isFormValid = (context: FormContext) => {
-//   return  context.fields.email.length > 4 && context.fields.password.length > 4;
-// }
-
-const isFormInValid = (context: FormContext) => {
-   return false;
-  // return !isFormValid(context);
+const emailValid = (value: string|undefined) => {
+  return value && value.length > 4 ? true : false;
 }
 
 export default function SignIn({ onSignIn }: SignInProps) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
-  // const [state, send] = useMachine(FormMachine, {
-  //   actions: {
-  //     updateFormValues: updateFormValues  
-  //   },
-  //   guards: {
-  //     isFormValid: isFormValid,
-  //     isFormInValid: isFormInValid
-  //   }  
-  // });
-  // const { email, password } = state.context.fields;
-
   const [formState, formSend] = useMachine(FormMachine);
 
-  useEffect(() => {
-    formSend({
-      type: 'ADD_INPUTS',
-      data: {
-        id: 'email',
-        helperText: 'Invalid Email',
-        label : 'Email',
-        required: true,
-        initialState: 'active'
+  // create a new instance for the email Input State machine
+  const emailMachine = createInputMachine<string>('email', 'inValid');
+  const [emailState, emailSend, emailInstance] = useMachine(emailMachine, {
+      guards: {
+          isInputValid: (context) => { 
+              return emailValid(context.value);
+          },
+          isInputInValid: (context) => { 
+            return !emailValid(context.value);
+          }
       }
-    });
-    formSend({
-      type: 'ADD_INPUTS',
-      data: {
-        id: 'password',
-        helperText: 'Invalid Password',
-        label : 'Password',
-        required: true,
-        initialState: 'active'
-      }
-    })
-  }, []);
+  });
 
-  // const handleEmailChange = (e: any) => {
-  //   // send({
-  //   //   type: 'INPUT_CHANGED',
-  //   //   data: {
-  //   //     value: e.target!.value,
-  //   //     key: 'email'
-  //   //   }
-  //   // });
-  // }
-
-  // const handlePasswordChange = (e: any) => {
-  //   // send({
-  //   //   type: 'INPUT_CHANGED',
-  //   //   data: {
-  //   //     value: e.target!.value,
-  //   //     key: 'password'
-  //   //   }
-  //   // });
-  // }
+  // console.log(emailState, 'emailState');
 
   const formValid = () => {
     return false;
@@ -151,27 +107,8 @@ export default function SignIn({ onSignIn }: SignInProps) {
   }
 
   const handleSubmit = () => {
-    console.log(formState, 'formState');
-    // setOpen(false);
-    //  if (formValid()) {
-    //    onSignIn(email);
-    //   } else {
-    //     send({
-    //       type: 'INPUT_CHANGED',
-    //       data: {
-    //         value: email,
-    //         key: 'email'
-    //       }
-    //     });
-    //     send({
-    //       type: 'INPUT_CHANGED',
-    //       data: {
-    //         value: password,
-    //         key: 'password'
-    //       }
-    //     });
-    //     setOpen(true);
-    //   }
+    setOpen(true);
+    let formValid = true;
   }
 
   const handleClose = () => {
@@ -192,38 +129,15 @@ export default function SignIn({ onSignIn }: SignInProps) {
           className={classes.form}
           noValidate
         >
-            {
-                  formState.context.inputs.map((input, i) => {
-                    //@ts-ignore
-                    const { context } = input.machine;
-                    return <InputFiled
-                      key={i}
-                      inputMachineRef={input}
-                      label={context.label}
-                      required={context.required}
-                      helperText={context.helperText}
-                      id={context.id} 
-                    />
-                  })
-            }
-          {/* <InputFiled
-            handleChange={handleEmailChange}
-            required
-            id="email"
-            label="Email Address"
-            error={(email && email.length < 4) || open ? true : false}
-            helperText={(email && email.length < 4) || open ? 'Invalid Email' : ''}
+          <InputFiled<string>
+            label='Email'
+            required={true}
+            helperText='Email Please'
+            id='email'
+            showError={open}
+            autoFocus={true}
+            machineInstance={emailInstance}
           />
-          <InputFiled
-            handleChange={handlePasswordChange}
-            required
-            label="Password"
-            type="password"
-            id="password"
-            // autoComplete="current-password"
-            error={(password && password.length < 4) || open ? true : false}
-            helperText={(password && password.length < 4) || open ? 'Invalid password' : ''}
-          /> */}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"

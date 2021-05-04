@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
@@ -11,6 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { Link } from 'react-router-dom';
+import InputFiled from './input-filed';
+import { createInputMachine } from '../stateMachines/inputField';
+import { emailValid, passwordValid, nameValid } from '../helpers/util';
+import { useMachine} from '@xstate/react';
 
 function Copyright() {
   return (
@@ -54,11 +57,82 @@ interface SignUpProps {
 export default function SignUp({ onSignIn }: SignUpProps) {
   const classes = useStyles();
 
-  const [email, setEmail] = useState('');
+  const [open, setOpen] = useState(false);
 
-  const handleEmailChange = (e: any) => {
-    setEmail(e.target!.value);
+  // create a new instance of Input machine for password
+  const passwordMachine = createInputMachine<string>('password', 'inValid');
+  const [passwordState, passwordSend, passwordInstance] = useMachine(passwordMachine, {
+      guards: {
+          isInputValid: (context) => { 
+              return passwordValid(context.value);
+          },
+          isInputInValid: (context) => { 
+            return !passwordValid(context.value);
+          }
+      }
+  });
+
+  // create a new instance for the email Input State machine
+  const emailMachine = createInputMachine<string>('email', 'inValid');
+  const [emailState, emailSend, emailInstance] = useMachine(emailMachine, {
+      guards: {
+          isInputValid: (context) => { 
+              return emailValid(context.value);
+          },
+          isInputInValid: (context) => { 
+            return !emailValid(context.value);
+          }
+      }
+  });
+
+  // create a new instance for the email Input State machine
+  const fNamedMachine = createInputMachine<string>('fName', 'inValid');
+  const [fNameState, fNamseSend, fNameInstance] = useMachine(fNamedMachine, {
+      guards: {
+          isInputValid: (context) => { 
+              return nameValid(context.value);
+          },
+          isInputInValid: (context) => { 
+            return !nameValid(context.value);
+          }
+      }
+  });
+
+  const lNamedMachine = createInputMachine<string>('lName', 'inValid');
+  const [lNameState, lNamseSend, lNameInstance] = useMachine(lNamedMachine, {
+      guards: {
+          isInputValid: (context) => { 
+              return nameValid(context.value);
+          },
+          isInputInValid: (context) => { 
+            return !nameValid(context.value);
+          }
+      }
+  });
+
+  const formValid = () => {
+    if (
+      passwordState.value === 'valid' &&
+      emailState.value === 'valid' &&
+      lNameState.value === 'valid' &&
+      fNameState.value === 'valid'
+    ) {
+      return true;
+    }
+    return false;
   }
+
+  const handleSubmit = () => {
+    setOpen(false);
+    if (formValid()) {
+       if (emailState.context.value) {
+          onSignIn(emailState.context.value);
+       }
+    } else {
+      setOpen(true);
+    }
+  }
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -76,50 +150,46 @@ export default function SignUp({ onSignIn }: SignUpProps) {
         >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
+               <InputFiled<string>
                 label="First Name"
-                autoFocus
+                required={true}
+                helperText='First Name is Required'
+                id='firstName'
+                showError={open}
+                autoFocus={true}
+                machineInstance={fNameInstance}
+                fullWidth={true}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
+              <InputFiled<string>
                 label="Last Name"
-                name="lastName"
-                autoComplete="lname"
+                required={true}
+                helperText='Last Name is Required'
+                id='lastName'
+                showError={open}
+                machineInstance={lNameInstance}
+                fullWidth={true}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                onChange={handleEmailChange}
-                variant="outlined"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
+              <InputFiled<string>
+                label='Email'
+                required={true}
+                helperText='Email is Required'
+                id='email'
+                showError={open}
+                machineInstance={emailInstance}
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
+              <InputFiled<string>
+                label='Password'
+                required={true}
+                helperText='Password is Required'
+                id='password'
+                showError={open}
+                machineInstance={passwordInstance}
               />
             </Grid>
             <Grid item xs={12}>
@@ -135,7 +205,7 @@ export default function SignUp({ onSignIn }: SignUpProps) {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={() =>  onSignIn(email)}
+            onClick={handleSubmit}
           >Sign Up</Button>
           <Grid container justify="flex-end">
             <Grid item>

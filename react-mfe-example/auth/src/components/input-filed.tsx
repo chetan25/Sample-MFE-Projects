@@ -12,6 +12,7 @@ interface InputFiledProps<T> {
     showError?: boolean;
     autoFocus?: boolean;
     machineInstance: InputInsacne<T>;
+    fullWidth?: boolean;
 };
 
 const InputFiled = <T,>({
@@ -22,12 +23,11 @@ const InputFiled = <T,>({
     machineInstance,
     type = 'text',
     showError = false,
-    autoFocus = false
+    autoFocus = false,
+    fullWidth = true
 }: InputFiledProps<T>) => {
     const [state, send] = useService(machineInstance);
     const isInputValid = state.value === 'valid';
-
-    // console.log(state, 'state');
 
     const handleChange = (e: any) => {
         const val =  e.target!.value;
@@ -44,7 +44,7 @@ const InputFiled = <T,>({
         variant="outlined"
         margin="normal"
         required={required}
-        fullWidth
+        fullWidth={fullWidth}
         id={id}
         label={label}
         name={id}

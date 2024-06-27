@@ -1,7 +1,7 @@
 ---
 Title: Webpack Module Federation Plugin Examples
 Excerpt: This is a mono repo that has examples of Module Federation with different javascript frameworks.
-Tech: 'Reeact', 'Typescript', 'Webapck', 'Javascript', 'Material UI', 'XState', 'Github Actions'
+Tech: "Reeact, Typescript, Webapck, Javascript, Material UI, XState, Github Actions"
 ---
 
 # Webpack Module Federation Plugin Examples

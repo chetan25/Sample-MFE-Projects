@@ -1,6 +1,6 @@
 ### React Micro Front end examples
 
-This is a sample Micro front end app that uses React + Module federation. 
+This is a sample Micro front end app that uses React + Module federation + XState
 
 ## Common Issues that one might encounter
 

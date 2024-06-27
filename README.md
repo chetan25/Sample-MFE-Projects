@@ -1,7 +1,7 @@
 ---
-title: Webpack Module Federation Plugin Examples
-excerpt: This is a mono repo that has examples of Module Federation with different javascript frameworks.
-Tools: ['Reeact', 'Typescript', 'Webapck', 'Javascript', 'Material UI', 'XState', 'Github Actions']
+Title: Webpack Module Federation Plugin Examples
+Excerpt: This is a mono repo that has examples of Module Federation with different javascript frameworks.
+Tech: 'Reeact', 'Typescript', 'Webapck', 'Javascript', 'Material UI', 'XState', 'Github Actions'
 ---
 
 # Webpack Module Federation Plugin Examples
@@ -10,14 +10,13 @@ This repos has examples on how to use module federation plugin with different ja
 
 ## Simple Javascript Example
 
-This is a simple javascript based micro app, that is build with 3 micro front ends. 
+This is a simple javascript based micro app, that is build with 3 micro front ends.
 
 - Container(host) -- This is the host app that renders the Cart and Products.
 - Cart -- Simple Cart app that just prints total number.
-- Products  -- Simple Products app that just use faker to generate random products.
+- Products -- Simple Products app that just use faker to generate random products.
 
 All three app can be started up using `nmpm start` command and the result can be seen by visiting [http://localhost:8080](http://localhost:8080)
-
 
 ## React Micro Front Ends
 
